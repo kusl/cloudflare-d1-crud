@@ -135,7 +135,7 @@ This project is experimental and currently unlicensed. Use at your own risk.
 ================================================================================
 FILE PATH: docs/llm/commands.txt
 ================================================================================
-d ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
+cd ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
 
 ================================================================================
 FILE PATH: docs/llm/output.txt
