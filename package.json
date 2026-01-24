@@ -2,6 +2,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.21.0",
     "@cloudflare/workers-types": "^4.20260118.0",
+    "@simplewebauthn/typescript-types": "^8.3.4",
     "vite": "^7.3.1",
     "wrangler": "^4.59.2"
   },
