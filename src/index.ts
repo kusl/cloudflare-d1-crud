@@ -1,5 +1,4 @@
 import * as SimpleWebAuthn from '@simplewebauthn/server';
-import { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
 
 export interface Env {
   DB: D1Database;
@@ -290,7 +289,7 @@ function renderUI(userId?: string) {
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ambitious D1 App</title>
+    <title>Passkey Demonstration</title>
     <style>
         :root { --p: #4f46e5; --bg: #0f172a; --card: #1e293b; --txt: #f8fafc; --acc: #38bdf8; --del: #ef4444; }
         * { box-sizing: border-box; }
@@ -319,7 +318,7 @@ function renderUI(userId?: string) {
 <body>
     <div class="container">
         <header>
-            <h1>⚡ Ambitious D1</h1>
+            <h1>⚡ Passkey Demonstration</h1>
             <div id="auth-ui">${authZone}</div>
         </header>
 
