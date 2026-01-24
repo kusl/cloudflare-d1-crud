@@ -7,80 +7,50 @@ import {
   type AuthenticationResponseJSON,
 } from '@simplewebauthn/server';
 
-/* =========================
-   Cloudflare Environment
-   ========================= */
-
 export interface Env {
   DB: D1Database;
 }
 
-/* =========================
-   Database Row Types
-   ========================= */
+/* ================= Utilities ================= */
 
-interface UserRow {
-  id: string;
-  credential_id: string;
-  public_key: ArrayBuffer;
-  counter: number;
-  transports: string; // JSON string
-}
-
-interface EntryRow {
-  id: number;
-  user_id: string;
-  title: string;
-  email: string | null;
-  date_val: string | null;
-  slider_val: number | null;
-  is_active: number | null;
-  tags_json: string | null;
-}
-
-/* =========================
-   Utilities
-   ========================= */
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-
-function json<T>(value: T, status = 200): Response {
-  return new Response(JSON.stringify(value), {
+function json(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
 }
 
-function badRequest(message: string): Response {
-  return json({ error: message }, 400);
+function badRequest(msg: string): Response {
+  return json({ error: msg }, 400);
 }
 
-function getSessionUserId(req: Request): string | null {
-  const cookie = req.headers.get('Cookie') ?? '';
-  return cookie.match(/session=([^;]+)/)?.[1] ?? null;
-}
-
-function bufferFromBase64URL(value: string): ArrayBuffer {
-  const padded = value.replace(/-/g, '+').replace(/_/g, '/');
-  const binary = atob(padded);
-  const bytes = new Uint8Array(binary.length);
+function base64urlToArrayBuffer(base64url: string): ArrayBuffer {
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64);
+  const buf = new ArrayBuffer(binary.length);
+  const view = new Uint8Array(buf);
   for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
+    view[i] = binary.charCodeAt(i);
   }
-  return bytes.buffer;
+  return buf;
 }
 
-/* =========================
-   HTML UI
-   ========================= */
+function stringToUint8ArrayStrict(value: string): Uint8Array<ArrayBuffer> {
+  const encoded = new TextEncoder().encode(value);
+  const buf = new ArrayBuffer(encoded.length);
+  const view = new Uint8Array(buf);
+  view.set(encoded);
+  return view;
+}
 
-function renderUI(userId: string | null): string {
+/* ================= HTML ================= */
+
+function renderHTML(): string {
   return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>D1 CRUD + WebAuthn</title>
+  <title>Cloudflare D1 CRUD</title>
   <style>
     body { font-family: system-ui; padding: 2rem; }
     footer {
@@ -88,15 +58,13 @@ function renderUI(userId: string | null): string {
       bottom: 2dvh;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       opacity: 0.7;
     }
   </style>
 </head>
 <body>
-  <h1>D1 CRUD + WebAuthn</h1>
-  <p>User: ${userId ?? 'anonymous'}</p>
-
+  <h1>Cloudflare D1 CRUD</h1>
   <footer>
     <a href="https://github.com/kusl/cloudflare-d1-crud" target="_blank">
       github.com/kusl/cloudflare-d1-crud
@@ -106,52 +74,47 @@ function renderUI(userId: string | null): string {
 </html>`;
 }
 
-/* =========================
-   Worker
-   ========================= */
+/* ================= Worker ================= */
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
+  async fetch(req: Request, env: Env): Promise<Response> {
+    const url = new URL(req.url);
     const rpID = url.hostname;
     const origin = `https://${rpID}`;
-    const userId = getSessionUserId(request);
 
-    /* ---------- UI ---------- */
-
-    if (url.pathname === '/' && request.method === 'GET') {
-      return new Response(renderUI(userId), {
+    if (req.method === 'GET' && url.pathname === '/') {
+      return new Response(renderHTML(), {
         headers: { 'Content-Type': 'text/html' },
       });
     }
 
-    /* ---------- Registration: Start ---------- */
+    /* -------- Registration start -------- */
 
-    if (url.pathname === '/webauthn/register/start' && request.method === 'POST') {
-      const newUserId = crypto.randomUUID();
+    if (req.method === 'POST' && url.pathname === '/register/start') {
+      const userId = crypto.randomUUID();
 
       const options = await generateRegistrationOptions({
         rpName: 'Cloudflare D1 CRUD',
         rpID,
-        userID: encoder.encode(newUserId),
-        userName: newUserId,
+        userID: stringToUint8ArrayStrict(userId),
+        userName: userId,
         attestationType: 'none',
       });
 
-      return json({ userId: newUserId, options });
+      return json({ userId, options });
     }
 
-    /* ---------- Registration: Finish ---------- */
+    /* -------- Registration finish -------- */
 
-    if (url.pathname === '/webauthn/register/finish' && request.method === 'POST') {
-      const body = (await request.json()) as {
+    if (req.method === 'POST' && url.pathname === '/register/finish') {
+      const body = (await req.json()) as {
         userId: string;
-        response: RegistrationResponseJSON;
         expectedChallenge: string;
+        response: RegistrationResponseJSON;
       };
 
-      if (!body?.userId || !body?.response || !body?.expectedChallenge) {
-        return badRequest('Invalid registration payload');
+      if (!body?.userId || !body?.expectedChallenge || !body?.response) {
+        return badRequest('Invalid payload');
       }
 
       const verification = await verifyRegistrationResponse({
@@ -165,36 +128,38 @@ export default {
         return badRequest('Registration failed');
       }
 
-      const {
-        credentialID,
-        credentialPublicKey,
-        counter,
-        credentialDeviceType,
-        credentialBackedUp,
-      } = verification.registrationInfo;
+      const { credential } = verification.registrationInfo;
 
       await env.DB.prepare(
         `INSERT INTO Users (id, credential_id, public_key, counter, transports)
          VALUES (?, ?, ?, ?, ?)`
-      ).bind(
-        body.userId,
-        Buffer.from(credentialID),
-        credentialPublicKey,
-        counter,
-        JSON.stringify(body.response.response.transports ?? [])
-      ).run();
+      )
+        .bind(
+          body.userId,
+          credential.id,
+          credential.publicKey,
+          credential.counter,
+          JSON.stringify(body.response.response.transports ?? []),
+        )
+        .run();
 
       return json({ ok: true });
     }
 
-    /* ---------- Authentication: Start ---------- */
+    /* -------- Authentication start -------- */
 
-    if (url.pathname === '/webauthn/auth/start' && request.method === 'POST') {
-      if (!userId) return badRequest('No session');
+    if (req.method === 'POST' && url.pathname === '/auth/start') {
+      const body = (await req.json()) as { userId: string };
+      if (!body?.userId) return badRequest('Missing userId');
 
       const user = await env.DB.prepare(
         `SELECT * FROM Users WHERE id = ?`
-      ).bind(userId).first<UserRow>();
+      )
+        .bind(body.userId)
+        .first<{
+          credential_id: string;
+          transports: string;
+        }>();
 
       if (!user) return badRequest('User not found');
 
@@ -202,8 +167,7 @@ export default {
         rpID,
         allowCredentials: [
           {
-            id: new Uint8Array(user.public_key),
-            type: 'public-key',
+            id: user.credential_id,
             transports: JSON.parse(user.transports),
           },
         ],
@@ -212,21 +176,29 @@ export default {
       return json(options);
     }
 
-    /* ---------- Authentication: Finish ---------- */
+    /* -------- Authentication finish -------- */
 
-    if (url.pathname === '/webauthn/auth/finish' && request.method === 'POST') {
-      const body = (await request.json()) as {
-        response: AuthenticationResponseJSON;
+    if (req.method === 'POST' && url.pathname === '/auth/finish') {
+      const body = (await req.json()) as {
+        userId: string;
         expectedChallenge: string;
+        response: AuthenticationResponseJSON;
       };
 
-      if (!userId || !body?.response || !body?.expectedChallenge) {
-        return badRequest('Invalid authentication payload');
+      if (!body?.userId || !body?.expectedChallenge || !body?.response) {
+        return badRequest('Invalid payload');
       }
 
       const user = await env.DB.prepare(
         `SELECT * FROM Users WHERE id = ?`
-      ).bind(userId).first<UserRow>();
+      )
+        .bind(body.userId)
+        .first<{
+          credential_id: string;
+          public_key: ArrayBuffer;
+          counter: number;
+          transports: string;
+        }>();
 
       if (!user) return badRequest('User not found');
 
@@ -235,9 +207,9 @@ export default {
         expectedChallenge: body.expectedChallenge,
         expectedOrigin: origin,
         expectedRPID: rpID,
-        authenticator: {
-          credentialID: bufferFromBase64URL(user.credential_id),
-          credentialPublicKey: user.public_key,
+        credential: {
+          id: user.credential_id,
+          publicKey: new Uint8Array(user.public_key),
           counter: user.counter,
           transports: JSON.parse(user.transports),
         },
@@ -249,7 +221,9 @@ export default {
 
       await env.DB.prepare(
         `UPDATE Users SET counter = ? WHERE id = ?`
-      ).bind(verification.authenticationInfo.newCounter, userId).run();
+      )
+        .bind(verification.authenticationInfo.newCounter, body.userId)
+        .run();
 
       return json({ ok: true });
     }
@@ -257,3 +231,4 @@ export default {
     return new Response('Not found', { status: 404 });
   },
 };
+
