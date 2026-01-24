@@ -1,5 +1,4 @@
 import * as SimpleWebAuthn from '@simplewebauthn/server';
-import { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
 
 export interface Env {
   DB: D1Database;
