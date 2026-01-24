@@ -247,4 +247,724 @@ updating local tracking ref 'refs/remotes/origin/main'
 real	0m0.802s
 user	0m0.019s
 sys	0m0.018s
-kushal@flex2024:~/src/typescript/cloudflare/crud$ 
+kushal@flex2024:~/src/typescript/cloudflare/crud$ cd ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
+/home/kushal/src/typescript/cloudflare/crud
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+yarn upgrade v1.22.22
+warning package.json: No license field
+warning No license field
+warning No license field
+warning No license field
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Rebuilding all packages...
+success Saved lockfile.
+warning No license field
+success Saved 56 new dependencies.
+info Direct dependencies
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ vite@7.3.1
+└─ wrangler@4.60.0
+info All dependencies
+├─ @cloudflare/kv-asset-handler@0.4.2
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workerd-linux-64@1.20260120.0
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @cspotcode/source-map-support@0.8.1
+├─ @esbuild/linux-x64@0.27.0
+├─ @hexagon/base64@1.1.28
+├─ @img/colour@1.0.0
+├─ @img/sharp-linux-x64@0.34.5
+├─ @img/sharp-linuxmusl-x64@0.34.5
+├─ @jridgewell/resolve-uri@3.1.2
+├─ @jridgewell/sourcemap-codec@1.5.5
+├─ @jridgewell/trace-mapping@0.3.9
+├─ @levischuck/tiny-cbor@0.2.11
+├─ @peculiar/asn1-android@2.6.0
+├─ @peculiar/asn1-csr@2.6.0
+├─ @peculiar/asn1-ecc@2.6.0
+├─ @peculiar/asn1-pfx@2.6.0
+├─ @peculiar/asn1-pkcs9@2.6.0
+├─ @peculiar/x509@1.14.3
+├─ @poppinss/dumper@0.6.5
+├─ @poppinss/exception@1.2.3
+├─ @rollup/rollup-linux-x64-gnu@4.56.0
+├─ @rollup/rollup-linux-x64-musl@4.56.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ @sindresorhus/is@7.2.0
+├─ @speed-highlight/core@1.2.14
+├─ @types/estree@1.0.8
+├─ blake3-wasm@2.1.5
+├─ cookie@1.1.1
+├─ detect-libc@2.1.2
+├─ error-stack-parser-es@1.0.5
+├─ esbuild@0.27.0
+├─ kleur@4.1.5
+├─ nanoid@3.3.11
+├─ path-to-regexp@6.3.0
+├─ pathe@2.0.3
+├─ picocolors@1.1.1
+├─ postcss@8.5.6
+├─ pvutils@1.1.5
+├─ reflect-metadata@0.2.2
+├─ rollup@4.56.0
+├─ semver@7.7.3
+├─ sharp@0.34.5
+├─ source-map-js@1.2.1
+├─ supports-color@10.2.2
+├─ tinyglobby@0.2.15
+├─ tslib@2.8.1
+├─ tsyringe@4.10.0
+├─ undici@7.18.2
+├─ vite@7.3.1
+├─ wrangler@4.60.0
+├─ youch-core@0.3.3
+├─ youch@4.1.0-beta.10
+└─ zod@3.25.76
+Done in 4.87s.
+
+real	0m5.364s
+user	0m5.710s
+sys	0m1.792s
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+
+real	0m0.002s
+user	0m0.000s
+sys	0m0.002s
+yarn install v1.22.22
+warning package.json: No license field
+warning No license field
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.38s.
+
+real	0m0.833s
+user	0m0.903s
+sys	0m0.149s
+
+ ⛅️ wrangler 4.60.0
+───────────────────
+🌀 Building list of assets...
+✨ Read 1 file from the assets directory /home/kushal/src/typescript/cloudflare/crud/public
+🌀 Starting asset upload...
+No updated asset files to upload. Proceeding with deployment...
+Total Upload: 621.40 KiB / gzip: 112.44 KiB
+Worker Startup Time: 13 ms
+Your Worker has access to the following bindings:
+Binding                      Resource         
+env.DB (my-crud-db)          D1 Database      
+env.ASSETS                   Assets           
+
+Uploaded crud (5.74 sec)
+Deployed crud triggers (1.24 sec)
+  https://crud.kus.workers.dev
+Current Version ID: df20946e-e9b8-4d2d-a163-c520f8ce2d48
+
+real	0m10.517s
+user	0m2.622s
+sys	0m0.443s
+#!/bin/bash
+
+# Configuration
+OUTPUT_DIR="docs/llm"
+OUTPUT_FILE="${OUTPUT_DIR}/dump.txt"
+
+# 1. Check if we are inside a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: You are not inside a git repository."
+    exit 1
+fi
+
+# 2. Create the directory if it doesn't exist
+if [ ! -d "$OUTPUT_DIR" ]; then
+    echo "Creating directory $OUTPUT_DIR..."
+    mkdir -p "$OUTPUT_DIR"
+fi
+
+# 3. Clear the output file
+: > "$OUTPUT_FILE"
+
+echo "Processing files from Git index..."
+
+# 4. Loop through files in the git index
+git ls-files | while read -r file; do
+    
+    # --- EXCLUSIONS ---
+    # Skip the output file, lock files, and other noise
+    if [[ "$file" == "$OUTPUT_FILE" ]] || \
+       [[ "$file" == "yarn.lock" ]] || \
+       [[ "$file" == "package-lock.json" ]]; then
+        echo "Skipping excluded file: $file"
+        continue
+    fi
+
+    # Check if the file exists locally
+    if [ -f "$file" ]; then
+        
+        # Check if the file is binary
+        if grep -Iq . "$file" 2>/dev/null || [ ! -s "$file" ]; then
+            {
+                echo "================================================================================"
+                echo "FILE PATH: $file"
+                echo "================================================================================"
+                cat "$file"
+                echo -e "\n" 
+            } >> "$OUTPUT_FILE"
+            echo "Added: $file"
+        else
+            echo "Skipped Binary: $file"
+        fi
+    fi
+done
+
+echo "------------------------------------------------"
+echo "Success! Content dumped to: $OUTPUT_FILE"
+
+
+
+
+Processing files from Git index...
+Added: .gitignore
+Added: README.md
+Added: docs/llm/commands.txt
+Skipping excluded file: docs/llm/dump.txt
+Added: docs/llm/output.txt
+Added: export.sh
+Added: package.json
+Added: public/simplewebauthn.js
+Added: schema.sql
+Added: src/index.ts
+Added: tsconfig.json
+Added: vite.config.ts
+Added: wrangler.toml
+Skipping excluded file: yarn.lock
+------------------------------------------------
+Success! Content dumped to: docs/llm/dump.txt
+
+real	0m0.055s
+user	0m0.006s
+sys	0m0.050s
+
+real	0m0.006s
+user	0m0.002s
+sys	0m0.004s
+[main 3b3455c] add all files
+ 2 files changed, 64 insertions(+), 2088 deletions(-)
+
+real	0m0.013s
+user	0m0.004s
+sys	0m0.009s
+Pushing to github.com:kusl/cloudflare-d1-crud.git
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (6/6), 1.03 KiB | 1.03 MiB/s, done.
+Total 6 (delta 3), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To github.com:kusl/cloudflare-d1-crud.git
+   2213b23..3b3455c  main -> main
+updating local tracking ref 'refs/remotes/origin/main'
+
+real	0m0.677s
+user	0m0.015s
+sys	0m0.020s
+kushal@flex2024:~/src/typescript/cloudflare/crud$ cd ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
+/home/kushal/src/typescript/cloudflare/crud
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+yarn upgrade v1.22.22
+warning package.json: No license field
+warning No license field
+warning No license field
+warning No license field
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Rebuilding all packages...
+success Saved lockfile.
+warning No license field
+success Saved 56 new dependencies.
+info Direct dependencies
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ vite@7.3.1
+└─ wrangler@4.60.0
+info All dependencies
+├─ @cloudflare/kv-asset-handler@0.4.2
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workerd-linux-64@1.20260120.0
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @cspotcode/source-map-support@0.8.1
+├─ @esbuild/linux-x64@0.27.0
+├─ @hexagon/base64@1.1.28
+├─ @img/colour@1.0.0
+├─ @img/sharp-linux-x64@0.34.5
+├─ @img/sharp-linuxmusl-x64@0.34.5
+├─ @jridgewell/resolve-uri@3.1.2
+├─ @jridgewell/sourcemap-codec@1.5.5
+├─ @jridgewell/trace-mapping@0.3.9
+├─ @levischuck/tiny-cbor@0.2.11
+├─ @peculiar/asn1-android@2.6.0
+├─ @peculiar/asn1-csr@2.6.0
+├─ @peculiar/asn1-ecc@2.6.0
+├─ @peculiar/asn1-pfx@2.6.0
+├─ @peculiar/asn1-pkcs9@2.6.0
+├─ @peculiar/x509@1.14.3
+├─ @poppinss/dumper@0.6.5
+├─ @poppinss/exception@1.2.3
+├─ @rollup/rollup-linux-x64-gnu@4.56.0
+├─ @rollup/rollup-linux-x64-musl@4.56.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ @sindresorhus/is@7.2.0
+├─ @speed-highlight/core@1.2.14
+├─ @types/estree@1.0.8
+├─ blake3-wasm@2.1.5
+├─ cookie@1.1.1
+├─ detect-libc@2.1.2
+├─ error-stack-parser-es@1.0.5
+├─ esbuild@0.27.0
+├─ kleur@4.1.5
+├─ nanoid@3.3.11
+├─ path-to-regexp@6.3.0
+├─ pathe@2.0.3
+├─ picocolors@1.1.1
+├─ postcss@8.5.6
+├─ pvutils@1.1.5
+├─ reflect-metadata@0.2.2
+├─ rollup@4.56.0
+├─ semver@7.7.3
+├─ sharp@0.34.5
+├─ source-map-js@1.2.1
+├─ supports-color@10.2.2
+├─ tinyglobby@0.2.15
+├─ tslib@2.8.1
+├─ tsyringe@4.10.0
+├─ undici@7.18.2
+├─ vite@7.3.1
+├─ wrangler@4.60.0
+├─ youch-core@0.3.3
+├─ youch@4.1.0-beta.10
+└─ zod@3.25.76
+Done in 5.62s.
+
+real	0m6.201s
+user	0m5.630s
+sys	0m2.048s
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+
+real	0m0.002s
+user	0m0.000s
+sys	0m0.002s
+yarn install v1.22.22
+warning package.json: No license field
+warning No license field
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.39s.
+
+real	0m0.883s
+user	0m0.936s
+sys	0m0.161s
+
+ ⛅️ wrangler 4.60.0
+───────────────────
+🌀 Building list of assets...
+✨ Read 1 file from the assets directory /home/kushal/src/typescript/cloudflare/crud/public
+🌀 Starting asset upload...
+No updated asset files to upload. Proceeding with deployment...
+Total Upload: 621.40 KiB / gzip: 112.44 KiB
+Worker Startup Time: 13 ms
+Your Worker has access to the following bindings:
+Binding                      Resource         
+env.DB (my-crud-db)          D1 Database      
+env.ASSETS                   Assets           
+
+Uploaded crud (7.37 sec)
+Deployed crud triggers (2.15 sec)
+  https://crud.kus.workers.dev
+Current Version ID: 5235de01-94d3-4728-bd50-f790d11fc9cc
+
+real	0m13.369s
+user	0m2.687s
+sys	0m0.490s
+#!/bin/bash
+
+# Configuration
+OUTPUT_DIR="docs/llm"
+OUTPUT_FILE="${OUTPUT_DIR}/dump.txt"
+
+# 1. Check if we are inside a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: You are not inside a git repository."
+    exit 1
+fi
+
+mkdir -p "$OUTPUT_DIR"
+: > "$OUTPUT_FILE"
+
+echo "Processing files from Git index..."
+FILE_COUNT=0
+
+# 4. Loop through files in the git index
+# Added 'docs/llm/commands.txt' and 'docs/llm/output.txt' to exclusion
+git ls-files | while read -r file; do
+    
+    if [[ "$file" == "$OUTPUT_FILE" ]] || \
+       [[ "$file" == "yarn.lock" ]] || \
+       [[ "$file" == "package-lock.json" ]] || \
+       [[ "$file" == "docs/llm/commands.txt" ]] || \
+       [[ "$file" == "docs/llm/output.txt" ]]; then
+        continue
+    fi
+
+    if [ -f "$file" ]; then
+        if grep -Iq . "$file" 2>/dev/null || [ ! -s "$file" ]; then
+            {
+                echo "================================================================================"
+                echo "FILE PATH: $file"
+                echo "================================================================================"
+                cat "$file"
+                echo -e "\n" 
+            } >> "$OUTPUT_FILE"
+            ((FILE_COUNT++))
+            echo "Added: $file"
+        fi
+    fi
+done
+
+# Stats for your LLM context management
+CHAR_COUNT=$(wc -m < "$OUTPUT_FILE")
+echo "------------------------------------------------"
+echo "Success! $FILE_COUNT files dumped to: $OUTPUT_FILE"
+echo "Total Character Count: $CHAR_COUNT"
+echo "------------------------------------------------"
+Processing files from Git index...
+Added: .gitignore
+Added: README.md
+Added: export.sh
+Added: package.json
+Added: public/simplewebauthn.js
+Added: schema.sql
+Added: src/index.ts
+Added: tsconfig.json
+Added: vite.config.ts
+Added: wrangler.toml
+------------------------------------------------
+Success! 0 files dumped to: docs/llm/dump.txt
+Total Character Count: 38584
+------------------------------------------------
+
+real	0m0.062s
+user	0m0.009s
+sys	0m0.047s
+
+real	0m0.006s
+user	0m0.001s
+sys	0m0.005s
+[main 780f955] add all files
+ 2 files changed, 24 insertions(+), 302 deletions(-)
+
+real	0m0.012s
+user	0m0.003s
+sys	0m0.008s
+Pushing to github.com:kusl/cloudflare-d1-crud.git
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (6/6), 785 bytes | 785.00 KiB/s, done.
+Total 6 (delta 3), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (3/3), completed with 2 local objects.
+To github.com:kusl/cloudflare-d1-crud.git
+   3b3455c..780f955  main -> main
+updating local tracking ref 'refs/remotes/origin/main'
+
+real	0m1.188s
+user	0m0.016s
+sys	0m0.016s
+kushal@flex2024:~/src/typescript/cloudflare/crud$ cd ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
+/home/kushal/src/typescript/cloudflare/crud
+{
+  "license": "AGPL-3.0-only",
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+yarn upgrade v1.22.22
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Rebuilding all packages...
+success Saved lockfile.
+success Saved 56 new dependencies.
+info Direct dependencies
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ vite@7.3.1
+└─ wrangler@4.60.0
+info All dependencies
+├─ @cloudflare/kv-asset-handler@0.4.2
+├─ @cloudflare/vite-plugin@1.21.2
+├─ @cloudflare/workerd-linux-64@1.20260120.0
+├─ @cloudflare/workers-types@4.20260124.0
+├─ @cspotcode/source-map-support@0.8.1
+├─ @esbuild/linux-x64@0.27.0
+├─ @hexagon/base64@1.1.28
+├─ @img/colour@1.0.0
+├─ @img/sharp-linux-x64@0.34.5
+├─ @img/sharp-linuxmusl-x64@0.34.5
+├─ @jridgewell/resolve-uri@3.1.2
+├─ @jridgewell/sourcemap-codec@1.5.5
+├─ @jridgewell/trace-mapping@0.3.9
+├─ @levischuck/tiny-cbor@0.2.11
+├─ @peculiar/asn1-android@2.6.0
+├─ @peculiar/asn1-csr@2.6.0
+├─ @peculiar/asn1-ecc@2.6.0
+├─ @peculiar/asn1-pfx@2.6.0
+├─ @peculiar/asn1-pkcs9@2.6.0
+├─ @peculiar/x509@1.14.3
+├─ @poppinss/dumper@0.6.5
+├─ @poppinss/exception@1.2.3
+├─ @rollup/rollup-linux-x64-gnu@4.56.0
+├─ @rollup/rollup-linux-x64-musl@4.56.0
+├─ @simplewebauthn/browser@13.2.2
+├─ @simplewebauthn/server@13.2.2
+├─ @sindresorhus/is@7.2.0
+├─ @speed-highlight/core@1.2.14
+├─ @types/estree@1.0.8
+├─ blake3-wasm@2.1.5
+├─ cookie@1.1.1
+├─ detect-libc@2.1.2
+├─ error-stack-parser-es@1.0.5
+├─ esbuild@0.27.0
+├─ kleur@4.1.5
+├─ nanoid@3.3.11
+├─ path-to-regexp@6.3.0
+├─ pathe@2.0.3
+├─ picocolors@1.1.1
+├─ postcss@8.5.6
+├─ pvutils@1.1.5
+├─ reflect-metadata@0.2.2
+├─ rollup@4.56.0
+├─ semver@7.7.3
+├─ sharp@0.34.5
+├─ source-map-js@1.2.1
+├─ supports-color@10.2.2
+├─ tinyglobby@0.2.15
+├─ tslib@2.8.1
+├─ tsyringe@4.10.0
+├─ undici@7.18.2
+├─ vite@7.3.1
+├─ wrangler@4.60.0
+├─ youch-core@0.3.3
+├─ youch@4.1.0-beta.10
+└─ zod@3.25.76
+Done in 4.51s.
+
+real	0m5.021s
+user	0m5.286s
+sys	0m1.708s
+{
+  "license": "AGPL-3.0-only",
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+
+real	0m0.002s
+user	0m0.000s
+sys	0m0.003s
+yarn install v1.22.22
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.38s.
+
+real	0m0.847s
+user	0m0.920s
+sys	0m0.149s
+
+ ⛅️ wrangler 4.60.0
+───────────────────
+🌀 Building list of assets...
+✨ Read 1 file from the assets directory /home/kushal/src/typescript/cloudflare/crud/public
+🌀 Starting asset upload...
+No updated asset files to upload. Proceeding with deployment...
+Total Upload: 621.40 KiB / gzip: 112.44 KiB
+Worker Startup Time: 13 ms
+Your Worker has access to the following bindings:
+Binding                      Resource         
+env.DB (my-crud-db)          D1 Database      
+env.ASSETS                   Assets           
+
+Uploaded crud (14.03 sec)
+Deployed crud triggers (4.91 sec)
+  https://crud.kus.workers.dev
+Current Version ID: 46163354-6b1b-41c5-99da-86f1f562b7d4
+
+real	0m24.457s
+user	0m2.720s
+sys	0m0.519s
+#!/bin/bash
+
+# Configuration
+OUTPUT_DIR="docs/llm"
+OUTPUT_FILE="${OUTPUT_DIR}/dump.txt"
+
+# 1. Check if we are inside a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: You are not inside a git repository."
+    exit 1
+fi
+
+mkdir -p "$OUTPUT_DIR"
+: > "$OUTPUT_FILE"
+
+echo "Processing files from Git index..."
+FILE_COUNT=0
+
+# 4. Loop through files in the git index
+# Added 'docs/llm/commands.txt' and 'docs/llm/output.txt' to exclusion
+git ls-files | while read -r file; do
+    
+    if [[ "$file" == "$OUTPUT_FILE" ]] || \
+       [[ "$file" == "yarn.lock" ]] || \
+       [[ "$file" == "package-lock.json" ]] || \
+       [[ "$file" == "docs/llm/commands.txt" ]] || \
+       [[ "$file" == "docs/llm/output.txt" ]]; then
+        continue
+    fi
+
+    if [ -f "$file" ]; then
+        if grep -Iq . "$file" 2>/dev/null || [ ! -s "$file" ]; then
+            {
+                echo "================================================================================"
+                echo "FILE PATH: $file"
+                echo "================================================================================"
+                cat "$file"
+                echo -e "\n" 
+            } >> "$OUTPUT_FILE"
+            ((FILE_COUNT++))
+            echo "Added: $file"
+        fi
+    fi
+done
+
+# Stats for your LLM context management
+CHAR_COUNT=$(wc -m < "$OUTPUT_FILE")
+echo "------------------------------------------------"
+echo "Success! $FILE_COUNT files dumped to: $OUTPUT_FILE"
+echo "Total Character Count: $CHAR_COUNT"
+echo "------------------------------------------------"
+Processing files from Git index...
+Added: .gitignore
+Added: README.md
+Added: export.sh
+Added: package.json
+Added: public/simplewebauthn.js
+Added: schema.sql
+Added: src/index.ts
+Added: tsconfig.json
+Added: vite.config.ts
+Added: wrangler.toml
+------------------------------------------------
+Success! 0 files dumped to: docs/llm/dump.txt
+Total Character Count: 38614
+------------------------------------------------
+
+real	0m0.046s
+user	0m0.013s
+sys	0m0.036s
+
+real	0m0.006s
+user	0m0.002s
+sys	0m0.003s
+[main 982be5b] add all files
+ 1 file changed, 1 insertion(+)
+
+real	0m0.009s
+user	0m0.002s
+sys	0m0.006s
+Pushing to github.com:kusl/cloudflare-d1-crud.git
+Enumerating objects: 13, done.
+Counting objects: 100% (13/13), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (8/8), 783 bytes | 783.00 KiB/s, done.
+Total 8 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), completed with 3 local objects.
+To github.com:kusl/cloudflare-d1-crud.git
+   780f955..982be5b  main -> main
+updating local tracking ref 'refs/remotes/origin/main'
+
+real	0m0.769s
+user	0m0.018s
+sys	0m0.012s
+kushal@flex2024:~/src/typescript/cloudflare/crud$ cd ~/src/typescript/cloudflare/crud/; pwd; cat package.json; time yarn upgrade; time cat package.json; time yarn; time npx wrangler deploy; cat export.sh; time bash export.sh; time git add .; time git commit --message "add all files"; time git push origin --all --verbose --verbose;
