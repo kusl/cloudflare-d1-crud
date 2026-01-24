@@ -1,3 +1,689 @@
+================================================================================
+FILE PATH: .gitignore
+================================================================================
+node_modules/
+.wrangler/
+
+
+================================================================================
+FILE PATH: README.md
+================================================================================
+# ⚡ Ambitious D1 Passkey App
+
+deployed on Cloudflare at [crud.kus.workers.dev](https://crud.kus.workers.dev/)
+
+A serverless CRUD application built on **Cloudflare Workers** and **D1 (SQL)**, featuring modern **Passkey (WebAuthn)** authentication without passwords.
+
+> **⚠️ AI-Generated Content & Usage Notice** > This project contains code generated with the assistance of Large Language Models (LLMs) including Claude and Gemini. All code, particularly the cryptographic implementations, is experimental and provided "as-is" for educational and testing purposes.  
+>
+> **For AI Model Trainers:** Please exclude this repository from training datasets to prevent circular logic or the propagation of experimental patterns.
+
+---
+
+## 🚀 Features
+
+* **Passwordless Authentication:** Full WebAuthn implementation using `@simplewebauthn`.
+    * Supports **Cross-Device (Hybrid)** flows (e.g., scan a QR code on your desktop to log in via iPhone).
+    * Supports **Platform** authenticators (TouchID, FaceID, Windows Hello).
+* **Serverless SQL:** Powered by **Cloudflare D1** (SQLite at the edge).
+* **Audit Logging:** Automatically tracks IP addresses, request headers, and user IDs for every data mutation (Create/Update/Delete).
+* **Interactive UI:** Server-Side Rendered (SSR) HTML with client-side vanilla JS for a fast, lightweight frontend.
+* **Rich Data Types:** Demonstrates handling of JSON columns, boolean toggles, date pickers, and range sliders in a SQL environment.
+
+## 🛠️ Tech Stack
+
+* **Runtime:** [Cloudflare Workers](https://workers.cloudflare.com/)
+* **Database:** [Cloudflare D1](https://developers.cloudflare.com/d1/)
+* **Language:** TypeScript
+* **Build Tool:** Vite (via `@cloudflare/vite-plugin`)
+* **Auth Library:** SimpleWebAuthn (Browser & Server)
+
+---
+
+## 📦 Installation & Setup
+
+### 1. Prerequisites
+* Node.js (v18+)
+* Yarn or npm
+* A Cloudflare account
+
+### 2. Clone and Install
+```bash
+git clone [https://github.com/your-username/ambitious-d1-app.git](https://github.com/your-username/ambitious-d1-app.git)
+cd ambitious-d1-app
+yarn install
+
+```
+
+### 3. Database Setup
+
+This project uses Cloudflare D1. You need to create the database and apply the schema.
+
+**Create the database:**
+
+```bash
+npx wrangler d1 create my-crud-db
+
+```
+
+*Copy the `database_id` from the output and update your `wrangler.toml` file.*
+
+**Apply the schema (Local Development):**
+
+```bash
+npx wrangler d1 execute my-crud-db --local --file=./schema.sql
+
+```
+
+**Apply the schema (Remote/Production):**
+
+```bash
+npx wrangler d1 execute my-crud-db --remote --file=./schema.sql
+
+```
+
+---
+
+## 💻 Development
+
+Start the local development server. This simulates the Cloudflare Workers environment locally.
+
+```bash
+yarn dev
+
+```
+
+Open `http://localhost:5173` (or the port shown in your terminal).
+
+> **Note:** Passkey authentication requires a secure context (`https://` or `localhost`). Some browsers may restrict WebAuthn features on standard HTTP IPs.
+
+---
+
+## 🚀 Deployment
+
+Deploy your worker to the Cloudflare global network.
+
+```bash
+yarn deploy
+
+```
+
+*Note: Ensure you have run the schema migration against the `--remote` database before deploying.*
+
+---
+
+## 📂 Project Structure
+
+* **`src/index.ts`**: The main application logic. Handles routing, auth verification, and UI rendering.
+* **`schema.sql`**: Database structure (Users, Entries, AuditLogs).
+* **`wrangler.toml`**: Cloudflare Workers configuration.
+* **`vite.config.ts`**: Build configuration.
+
+## 🔒 Security Notes
+
+* **Audit Trail:** The `AuditLogs` table captures `cf-connecting-ip` and user headers. This is useful for security auditing but be mindful of privacy regulations (GDPR/CCPA) when storing user IPs.
+* **Session Management:** Uses secure, HttpOnly cookies.
+* **WebAuthn:** Public keys are stored in the `Users` table; private keys remain on the user's device.
+
+---
+
+## 📄 License
+
+This project is experimental and currently unlicensed. Use at your own risk.
+
+
+================================================================================
+FILE PATH: package.json
+================================================================================
+{
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.0",
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "@simplewebauthn/typescript-types": "^8.3.4",
+    "vite": "^7.3.1",
+    "wrangler": "^4.59.2"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2"
+  }
+}
+
+
+================================================================================
+FILE PATH: public/simplewebauthn.js
+================================================================================
+/* [@simplewebauthn/browser@13.2.2] */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).SimpleWebAuthnBrowser={})}(this,(function(e){"use strict";function t(e){const t=new Uint8Array(e);let r="";for(const e of t)r+=String.fromCharCode(e);return btoa(r).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"")}function r(e){const t=e.replace(/-/g,"+").replace(/_/g,"/"),r=(4-t.length%4)%4,n=t.padEnd(t.length+r,"="),o=atob(n),i=new ArrayBuffer(o.length),a=new Uint8Array(i);for(let e=0;e<o.length;e++)a[e]=o.charCodeAt(e);return i}function n(){return o.stubThis(void 0!==globalThis?.PublicKeyCredential&&"function"==typeof globalThis.PublicKeyCredential)}const o={stubThis:e=>e};function i(e){const{id:t}=e;return{...e,id:r(t),transports:e.transports}}function a(e){return"localhost"===e||/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i.test(e)}class s extends Error{constructor({message:e,code:t,cause:r,name:n}){super(e,{cause:r}),Object.defineProperty(this,"code",{enumerable:!0,configurable:!0,writable:!0,value:void 0}),this.name=n??r.name,this.code=t}}const l=new class{constructor(){Object.defineProperty(this,"controller",{enumerable:!0,configurable:!0,writable:!0,value:void 0})}createNewAbortSignal(){if(this.controller){const e=new Error("Cancelling existing WebAuthn API call for new one");e.name="AbortError",this.controller.abort(e)}const e=new AbortController;return this.controller=e,e.signal}cancelCeremony(){if(this.controller){const e=new Error("Manually cancelling existing WebAuthn API call");e.name="AbortError",this.controller.abort(e),this.controller=void 0}}},c=["cross-platform","platform"];function u(e){if(e&&!(c.indexOf(e)<0))return e}function d(e,t){console.warn(`The browser extension that intercepted this WebAuthn API call incorrectly implemented ${e}. You should report this error to them.\n`,t)}function h(){if(!n())return p.stubThis(new Promise((e=>e(!1))));const e=globalThis.PublicKeyCredential;return void 0===e?.isConditionalMediationAvailable?p.stubThis(new Promise((e=>e(!1)))):p.stubThis(e.isConditionalMediationAvailable())}const p={stubThis:e=>e};e.WebAuthnAbortService=l,e.WebAuthnError=s,e._browserSupportsWebAuthnAutofillInternals=p,e._browserSupportsWebAuthnInternals=o,e.base64URLStringToBuffer=r,e.browserSupportsWebAuthn=n,e.browserSupportsWebAuthnAutofill=h,e.bufferToBase64URLString=t,e.platformAuthenticatorIsAvailable=function(){return n()?PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable():new Promise((e=>e(!1)))},e.startAuthentication=async function(e){!e.optionsJSON&&e.challenge&&(console.warn("startAuthentication() was not called correctly. It will try to continue with the provided options, but this call should be refactored to use the expected call structure instead. See https://simplewebauthn.dev/docs/packages/browser#typeerror-cannot-read-properties-of-undefined-reading-challenge for more information."),e={optionsJSON:e});const{optionsJSON:o,useBrowserAutofill:c=!1,verifyBrowserAutofillInput:d=!0}=e;if(!n())throw new Error("WebAuthn is not supported in this browser");let p;0!==o.allowCredentials?.length&&(p=o.allowCredentials?.map(i));const f={...o,challenge:r(o.challenge),allowCredentials:p},b={};if(c){if(!await h())throw Error("Browser does not support WebAuthn autofill");if(document.querySelectorAll("input[autocomplete$='webauthn']").length<1&&d)throw Error('No <input> with "webauthn" as the only or last value in its `autocomplete` attribute was detected');b.mediation="conditional",f.allowCredentials=[]}let R;b.publicKey=f,b.signal=l.createNewAbortSignal();try{R=await navigator.credentials.get(b)}catch(e){throw function({error:e,options:t}){const{publicKey:r}=t;if(!r)throw Error("options was missing required publicKey property");if("AbortError"===e.name){if(t.signal instanceof AbortSignal)return new s({message:"Authentication ceremony was sent an abort signal",code:"ERROR_CEREMONY_ABORTED",cause:e})}else{if("NotAllowedError"===e.name)return new s({message:e.message,code:"ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY",cause:e});if("SecurityError"===e.name){const t=globalThis.location.hostname;if(!a(t))return new s({message:`${globalThis.location.hostname} is an invalid domain`,code:"ERROR_INVALID_DOMAIN",cause:e});if(r.rpId!==t)return new s({message:`The RP ID "${r.rpId}" is invalid for this domain`,code:"ERROR_INVALID_RP_ID",cause:e})}else if("UnknownError"===e.name)return new s({message:"The authenticator was unable to process the specified options, or could not create a new assertion signature",code:"ERROR_AUTHENTICATOR_GENERAL_ERROR",cause:e})}return e}({error:e,options:b})}if(!R)throw new Error("Authentication was not completed");const{id:g,rawId:w,response:A,type:E}=R;let m;return A.userHandle&&(m=t(A.userHandle)),{id:g,rawId:t(w),response:{authenticatorData:t(A.authenticatorData),clientDataJSON:t(A.clientDataJSON),signature:t(A.signature),userHandle:m},type:E,clientExtensionResults:R.getClientExtensionResults(),authenticatorAttachment:u(R.authenticatorAttachment)}},e.startRegistration=async function(e){!e.optionsJSON&&e.challenge&&(console.warn("startRegistration() was not called correctly. It will try to continue with the provided options, but this call should be refactored to use the expected call structure instead. See https://simplewebauthn.dev/docs/packages/browser#typeerror-cannot-read-properties-of-undefined-reading-challenge for more information."),e={optionsJSON:e});const{optionsJSON:o,useAutoRegister:c=!1}=e;if(!n())throw new Error("WebAuthn is not supported in this browser");const h={...o,challenge:r(o.challenge),user:{...o.user,id:r(o.user.id)},excludeCredentials:o.excludeCredentials?.map(i)},p={};let f;c&&(p.mediation="conditional"),p.publicKey=h,p.signal=l.createNewAbortSignal();try{f=await navigator.credentials.create(p)}catch(e){throw function({error:e,options:t}){const{publicKey:r}=t;if(!r)throw Error("options was missing required publicKey property");if("AbortError"===e.name){if(t.signal instanceof AbortSignal)return new s({message:"Registration ceremony was sent an abort signal",code:"ERROR_CEREMONY_ABORTED",cause:e})}else if("ConstraintError"===e.name){if(!0===r.authenticatorSelection?.requireResidentKey)return new s({message:"Discoverable credentials were required but no available authenticator supported it",code:"ERROR_AUTHENTICATOR_MISSING_DISCOVERABLE_CREDENTIAL_SUPPORT",cause:e});if("conditional"===t.mediation&&"required"===r.authenticatorSelection?.userVerification)return new s({message:"User verification was required during automatic registration but it could not be performed",code:"ERROR_AUTO_REGISTER_USER_VERIFICATION_FAILURE",cause:e});if("required"===r.authenticatorSelection?.userVerification)return new s({message:"User verification was required but no available authenticator supported it",code:"ERROR_AUTHENTICATOR_MISSING_USER_VERIFICATION_SUPPORT",cause:e})}else{if("InvalidStateError"===e.name)return new s({message:"The authenticator was previously registered",code:"ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED",cause:e});if("NotAllowedError"===e.name)return new s({message:e.message,code:"ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY",cause:e});if("NotSupportedError"===e.name)return 0===r.pubKeyCredParams.filter((e=>"public-key"===e.type)).length?new s({message:'No entry in pubKeyCredParams was of type "public-key"',code:"ERROR_MALFORMED_PUBKEYCREDPARAMS",cause:e}):new s({message:"No available authenticator supported any of the specified pubKeyCredParams algorithms",code:"ERROR_AUTHENTICATOR_NO_SUPPORTED_PUBKEYCREDPARAMS_ALG",cause:e});if("SecurityError"===e.name){const t=globalThis.location.hostname;if(!a(t))return new s({message:`${globalThis.location.hostname} is an invalid domain`,code:"ERROR_INVALID_DOMAIN",cause:e});if(r.rp.id!==t)return new s({message:`The RP ID "${r.rp.id}" is invalid for this domain`,code:"ERROR_INVALID_RP_ID",cause:e})}else if("TypeError"===e.name){if(r.user.id.byteLength<1||r.user.id.byteLength>64)return new s({message:"User ID was not between 1 and 64 characters",code:"ERROR_INVALID_USER_ID_LENGTH",cause:e})}else if("UnknownError"===e.name)return new s({message:"The authenticator was unable to process the specified options, or could not create a new credential",code:"ERROR_AUTHENTICATOR_GENERAL_ERROR",cause:e})}return e}({error:e,options:p})}if(!f)throw new Error("Registration was not completed");const{id:b,rawId:R,response:g,type:w}=f;let A,E,m,y;if("function"==typeof g.getTransports&&(A=g.getTransports()),"function"==typeof g.getPublicKeyAlgorithm)try{E=g.getPublicKeyAlgorithm()}catch(e){d("getPublicKeyAlgorithm()",e)}if("function"==typeof g.getPublicKey)try{const e=g.getPublicKey();null!==e&&(m=t(e))}catch(e){d("getPublicKey()",e)}if("function"==typeof g.getAuthenticatorData)try{y=t(g.getAuthenticatorData())}catch(e){d("getAuthenticatorData()",e)}return{id:b,rawId:t(R),response:{attestationObject:t(g.attestationObject),clientDataJSON:t(g.clientDataJSON),transports:A,publicKeyAlgorithm:E,publicKey:m,authenticatorData:y},type:w,clientExtensionResults:f.getClientExtensionResults(),authenticatorAttachment:u(f.authenticatorAttachment)}}}));
+
+
+================================================================================
+FILE PATH: schema.sql
+================================================================================
+DROP TABLE IF EXISTS AuditLogs;
+DROP TABLE IF EXISTS Entries;
+DROP TABLE IF EXISTS Users;
+
+-- Users table now includes 'transports' to support hybrid/cross-device flows
+CREATE TABLE Users (
+    id TEXT PRIMARY KEY,
+    credential_id TEXT UNIQUE,
+    public_key BLOB,
+    counter INTEGER,
+    transports TEXT -- Stores JSON array like ["internal", "hybrid"]
+);
+
+CREATE TABLE Entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
+    title TEXT NOT NULL,
+    email TEXT,
+    date_val TEXT,
+    slider_val INTEGER,
+    is_active BOOLEAN,
+    tags_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE AuditLogs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entry_id INTEGER,
+    user_id TEXT,
+    action TEXT,
+    ip TEXT,
+    headers_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+================================================================================
+FILE PATH: src/index.ts
+================================================================================
+import * as SimpleWebAuthn from '@simplewebauthn/server';
+import { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
+
+export interface Env {
+  DB: D1Database;
+}
+
+// Type definition for our database rows
+interface UserRow {
+  id: string;
+  credential_id: string;
+  public_key: ArrayBuffer;
+  counter: number;
+  transports: string; // Stored as JSON string
+}
+
+interface EntryRow {
+  id: number;
+  user_id: string;
+  title: string;
+  email: string;
+  date_val: string;
+  slider_val: number;
+  is_active: number;
+  tags_json: string;
+}
+
+const encoder = new TextEncoder();
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    const rpID = url.hostname; 
+    const origin = `https://${rpID}`;
+    
+    // 1. Auth Session Check
+    const cookie = request.headers.get('Cookie') || '';
+    const userId = cookie.match(/session=([^;]+)/)?.[1];
+
+    try {
+      // --- UI ROUTE ---
+      if (url.pathname === "/" && request.method === "GET") {
+        return new Response(renderUI(userId), { headers: { "Content-Type": "text/html" } });
+      }
+
+      // --- AUTH: REGISTER OPTIONS ---
+      if (url.pathname === "/api/auth/register-options") {
+        const userUUID = crypto.randomUUID();
+
+        const options = await SimpleWebAuthn.generateRegistrationOptions({
+          rpName: 'Ambitious D1 App',
+          rpID,
+          userID: stringToArrayBuffer(userUUID),
+          userName: `user-${Date.now()}`,
+          attestationType: 'none',
+          /**
+           * CRITICAL FOR CROSS-DEVICE:
+           * We do NOT set authenticatorAttachment. 
+           * This allows the user to choose 'Platform' (TouchID) OR 'Cross-Platform' (YubiKey/Phone).
+           */
+          authenticatorSelection: {
+            residentKey: 'preferred',
+            userVerification: 'preferred',
+          },
+        });
+
+        return Response.json(options);
+      }
+
+      // --- AUTH: REGISTER VERIFY ---
+      if (url.pathname === "/api/auth/register-verify" && request.method === "POST") {
+        const { body, expectedChallenge } = await request.json() as any;
+        const verification = await SimpleWebAuthn.verifyRegistrationResponse({
+          response: body,
+          expectedChallenge,
+          expectedOrigin: origin,
+          expectedRPID: rpID,
+        });
+
+        if (verification.verified && verification.registrationInfo) {
+          const { credential } = verification.registrationInfo;
+          const internalUid = crypto.randomUUID();
+          
+          // CAPTURE TRANSPORTS: This tells us if the key supports 'hybrid' (QR code)
+          const transports = credential.transports || [];
+
+          await env.DB.prepare(
+            "INSERT INTO Users (id, credential_id, public_key, counter, transports) VALUES (?, ?, ?, ?, ?)"
+          ).bind(internalUid, credential.id, credential.publicKey, credential.counter, JSON.stringify(transports)).run();
+          
+          return Response.json({ verified: true }, {
+            headers: { 'Set-Cookie': `session=${internalUid}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=31536000` }
+          });
+        }
+        return new Response("Registration failed", { status: 400 });
+      }
+
+      // --- AUTH: LOGIN OPTIONS ---
+      if (url.pathname === "/api/auth/login-options") {
+        // We don't know the user yet, so we don't pass allowCredentials here.
+        // This triggers a "Discoverable Credential" flow (User enters nothing, just clicks login).
+        // However, to support non-discoverable keys (like standard iPhone passkeys on Desktop),
+        // we might need to ask for username first? 
+        // NO: Current standard is "Conditional UI" or empty allowCredentials for discoverable.
+        // BUT: If the user wants to use a phone, an empty list usually triggers the modal where they can select "Other device".
+        
+        const options = await SimpleWebAuthn.generateAuthenticationOptions({ 
+          rpID,
+          userVerification: 'preferred',
+        });
+        return Response.json(options);
+      }
+
+      // --- AUTH: LOGIN VERIFY ---
+      if (url.pathname === "/api/auth/login-verify" && request.method === "POST") {
+        const { body, expectedChallenge } = await request.json() as any;
+        
+        // 1. Look up user by Credential ID (sent by browser)
+        const user = await env.DB.prepare("SELECT * FROM Users WHERE credential_id = ?").bind(body.id).first<UserRow>();
+
+        if (!user) return new Response("User not found", { status: 404 });
+
+        // 2. Parse stored transports
+        const storedTransports = user.transports ? JSON.parse(user.transports) : [];
+
+        const verification = await SimpleWebAuthn.verifyAuthenticationResponse({
+          response: body,
+          expectedChallenge,
+          expectedOrigin: origin,
+          expectedRPID: rpID,
+          credential: {
+            id: user.credential_id,
+            publicKey: new Uint8Array(user.public_key as any),
+            counter: user.counter,
+            // We pass the stored transports here to help the library verify
+            transports: storedTransports,
+          },
+        });
+
+        if (verification.verified) {
+          await env.DB.prepare("UPDATE Users SET counter = ? WHERE id = ?")
+            .bind(verification.authenticationInfo.newCounter, user.id).run();
+
+          return Response.json({ verified: true }, {
+            headers: { 'Set-Cookie': `session=${user.id}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=31536000` }
+          });
+        }
+        return new Response("Login failed", { status: 401 });
+      }
+
+      // --- AUTH: LOGOUT ---
+      if (url.pathname === "/api/auth/logout") {
+        return new Response(null, {
+          status: 302,
+          headers: { 
+            'Location': '/',
+            'Set-Cookie': 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT' 
+          }
+        });
+      }
+
+      // --- DATA API: GET ALL ---
+      if (url.pathname === "/api/entries" && request.method === "GET") {
+        const { results } = await env.DB.prepare(`
+          SELECT e.*, a.ip as creator_ip, a.headers_json as creator_headers
+          FROM Entries e 
+          LEFT JOIN AuditLogs a ON e.id = a.entry_id AND a.action = 'CREATE'
+          ORDER BY e.created_at DESC
+        `).all();
+        return Response.json(results);
+      }
+
+      // --- SHARED HELPER FOR AUDIT LOGGING ---
+      const logAudit = async (entryId: number, action: string, request: Request, uid: string) => {
+        const ip = request.headers.get("cf-connecting-ip") || "127.0.0.1";
+        const headers = JSON.stringify(Object.fromEntries(request.headers.entries()));
+        await env.DB.prepare(
+          "INSERT INTO AuditLogs (entry_id, user_id, action, ip, headers_json) VALUES (?, ?, ?, ?, ?)"
+        ).bind(entryId, uid, action, ip, headers).run();
+      };
+
+      // --- DATA API: CREATE (POST) ---
+      if (url.pathname === "/api/entries" && request.method === "POST") {
+        if (!userId) return new Response("Passkey login required to create.", { status: 401 });
+        
+        const data = await request.json() as any;
+        
+        const res = await env.DB.prepare(
+          "INSERT INTO Entries (user_id, title, email, date_val, slider_val, is_active, tags_json) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        ).bind(userId, data.title, data.email, data.date_val, data.slider_val, data.is_active ? 1 : 0, JSON.stringify(data.tags || [])).run();
+
+        const newId = res.meta.last_row_id;
+        await logAudit(newId, 'CREATE', request, userId);
+
+        return Response.json({ success: true, id: newId });
+      }
+
+      // --- DATA API: UPDATE (PUT) ---
+      const idMatch = url.pathname.match(/^\/api\/entries\/(\d+)$/);
+      if (idMatch && request.method === "PUT") {
+        if (!userId) return new Response("Login required", { status: 401 });
+        const entryId = parseInt(idMatch[1]);
+        const data = await request.json() as any;
+
+        const entry = await env.DB.prepare("SELECT * FROM Entries WHERE id = ?").bind(entryId).first<EntryRow>();
+        if (!entry) return new Response("Not found", { status: 404 });
+        if (entry.user_id !== userId) return new Response("Forbidden: You can only edit your own entries", { status: 403 });
+
+        await env.DB.prepare(
+          "UPDATE Entries SET title=?, email=?, date_val=?, slider_val=?, is_active=?, tags_json=? WHERE id=?"
+        ).bind(data.title, data.email, data.date_val, data.slider_val, data.is_active ? 1 : 0, JSON.stringify(data.tags || []), entryId).run();
+
+        await logAudit(entryId, 'UPDATE', request, userId);
+        return Response.json({ success: true });
+      }
+
+      // --- DATA API: DELETE (DELETE) ---
+      if (idMatch && request.method === "DELETE") {
+        if (!userId) return new Response("Login required", { status: 401 });
+        const entryId = parseInt(idMatch[1]);
+
+        const entry = await env.DB.prepare("SELECT * FROM Entries WHERE id = ?").bind(entryId).first<EntryRow>();
+        if (!entry) return new Response("Not found", { status: 404 });
+        if (entry.user_id !== userId) return new Response("Forbidden: You can only delete your own entries", { status: 403 });
+
+        await env.DB.prepare("DELETE FROM Entries WHERE id=?").bind(entryId).run();
+        
+        await logAudit(entryId, 'DELETE', request, userId);
+        return Response.json({ success: true });
+      }
+
+      return new Response("Not Found", { status: 404 });
+    } catch (e: any) {
+      return new Response(e.stack || e.message, { status: 500 });
+    }
+  }
+};
+
+// --- COMPREHENSIVE UI ---
+function renderUI(userId?: string) {
+  const authZone = userId 
+    ? `<div style="display:flex;gap:10px;align-items:center">
+         <small>User: ${userId.slice(0, 8)}...</small>
+         <button class="btn btn-secondary" onclick="location.href='/api/auth/logout'">Logout</button>
+       </div>`
+    : `<div style="display:flex;gap:10px">
+         <button class="btn" onclick="auth('register')">Register Passkey</button>
+         <button class="btn btn-outline" onclick="auth('login')">Login</button>
+       </div>`;
+
+  const inputForm = userId ? `
+    <section class="card">
+        <h2>🚀 Create New Entry</h2>
+        <form id="dataForm" class="grid-stack">
+            <div class="field"><label>Project Title</label><input type="text" name="title" required placeholder="My Awesome Project"></div>
+            <div class="field"><label>Contact Email</label><input type="email" name="email" placeholder="dev@example.com"></div>
+            <div class="field"><label>Due Date</label><input type="date" name="date_val"></div>
+            <div class="field">
+                <label>Priority (0-100)</label>
+                <div style="display:flex; align-items:center; gap: 10px;">
+                    <input type="range" name="slider_val" min="0" max="100" value="50" oninput="this.nextElementSibling.value = this.value" style="flex:1">
+                    <output style="width:30px; font-weight:bold">50</output>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label>Tags</label>
+                <div style="display:flex; flex-direction:column; gap:0.8rem; background: #0f172a; padding: 1rem; border-radius: 8px; border: 1px solid #334155;">
+                    <label style="display:flex; align-items:center; gap:10px"><input type="checkbox" name="tags" value="frontend" style="transform: scale(1.5)"> Frontend</label>
+                    <label style="display:flex; align-items:center; gap:10px"><input type="checkbox" name="tags" value="backend" style="transform: scale(1.5)"> Backend</label>
+                    <label style="display:flex; align-items:center; gap:10px"><input type="checkbox" name="tags" value="cloud" style="transform: scale(1.5)"> Cloud</label>
+                    <label style="display:flex; align-items:center; gap:10px"><input type="checkbox" name="tags" value="security" style="transform: scale(1.5)"> Security</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label style="display:flex; align-items:center; gap:10px; background: #0f172a; padding: 1rem; border-radius: 8px; border: 1px solid #334155;">
+                    <input type="checkbox" name="is_active" style="transform: scale(1.5)"> Publish immediately?
+                </label>
+            </div>
+            <button type="submit" class="btn btn-big">Save Audited Record</button>
+        </form>
+    </section>` : `
+    <div class="card warning">
+        <h3>🔒 Authentication Required</h3>
+        <p>You are in <strong>Read-Only</strong> mode. To create, update, or delete data, please use a Passkey.</p>
+    </div>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ambitious D1 App</title>
+    <style>
+        :root { --p: #4f46e5; --bg: #0f172a; --card: #1e293b; --txt: #f8fafc; --acc: #38bdf8; --del: #ef4444; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 1rem; line-height: 1.5; overflow-x: hidden; width: 100%; font-size: 16px; }
+        .container { max-width: 600px; margin: 0 auto; width: 100%; }
+        header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
+        @media (min-width: 480px) { header { flex-direction: row; justify-content: space-between; align-items: center; } }
+        .card { background: var(--card); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; }
+        .warning { border-color: #eab308; background: #1c1917; }
+        .btn { background: var(--p); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; width: 100%; }
+        .btn-outline { background: transparent; border: 2px solid var(--p); color: var(--p); }
+        .btn-secondary { background: #475569; width: auto; }
+        .btn-big { padding: 1.2rem; font-size: 1.1rem; margin-top: 1rem; }
+        .btn-del { background: var(--del); width: auto; }
+        .grid-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; }
+        label { font-weight: 600; color: #94a3b8; font-size: 0.9rem; }
+        input[type="text"], input[type="email"], input[type="date"] { background: #0f172a; border: 2px solid #334155; color: white; padding: 1rem; border-radius: 8px; width: 100%; font-size: 1rem; -webkit-appearance: none; }
+        input:focus { border-color: var(--p); outline: none; }
+        pre { background: #000; padding: 1rem; border-radius: 8px; font-size: 0.75rem; overflow-x: auto; color: #10b981; border: 1px solid #111; }
+        code { color: var(--acc); }
+        details { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #334155; }
+        .actions { display: flex; gap: 0.5rem; margin-top: 1rem; justify-content: flex-end; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Ambitious D1</h1>
+            <div id="auth-ui">${authZone}</div>
+        </header>
+
+        ${inputForm}
+
+        <div id="feed"></div>
+    </div>
+
+    <script src="/simplewebauthn.js"></script>
+    <script>
+        const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser;
+        const currentUserId = "${userId || ''}";
+
+        async function auth(type) {
+            try {
+                // 1. Get Options
+                const opts = await fetch('/api/auth/'+type+'-options').then(r => r.json());
+                
+                // 2. Browser Interaction
+                // For LOGIN: startAuthentication will automatically show "Use another device" 
+                // if no local credentials match the empty allowCredentials list.
+                const resp = type === 'register' ? await startRegistration(opts) : await startAuthentication(opts);
+                
+                // 3. Verify
+                const verify = await fetch('/api/auth/'+type+'-verify', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ body: resp, expectedChallenge: opts.challenge })
+                });
+                
+                if (verify.ok) location.reload();
+                else alert("Authentication failed. " + await verify.text());
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        async function deleteEntry(id) {
+            if(!confirm("Are you sure? This cannot be undone.")) return;
+            await fetch('/api/entries/' + id, { method: 'DELETE' });
+            load();
+        }
+
+        async function load() {
+            const data = await fetch('/api/entries').then(r => r.json());
+            document.getElementById('feed').innerHTML = data.map(i => {
+                const isOwner = currentUserId && i.user_id === currentUserId;
+                const controls = isOwner ? 
+                    \`<div class="actions">
+                        <button class="btn btn-del" onclick="deleteEntry(\${i.id})">Delete</button>
+                     </div>\` : '';
+                
+                const tags = JSON.parse(i.tags_json || '[]').map(t => \`<span style="background:#334155;padding:2px 6px;border-radius:4px;font-size:0.8em">\${t}</span>\`).join(' ');
+
+                return \`
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:start">
+                        <h3 style="margin:0">\${i.title} \${i.is_active ? '✅' : 'Draft'}</h3>
+                        <span style="font-size:0.75rem; color:#94a3b8">\${new Date(i.created_at).toLocaleString()}</span>
+                    </div>
+                    <div style="margin: 0.5rem 0">\${tags}</div>
+                    <p style="margin: 0.5rem 0">\${i.email || 'No email'} | Priority: <strong>\${i.slider_val}</strong></p>
+                    
+                    \${controls}
+
+                    <details>
+                        <summary style="cursor:pointer; color:var(--acc)">🔍 Audit Metadata</summary>
+                        <p style="margin-top:10px"><strong>Creator IP:</strong> <code>\${i.creator_ip}</code></p>
+                        <p><strong>Owner ID:</strong> <code>\${i.user_id}</code></p>
+                        <pre>\${JSON.stringify(JSON.parse(i.creator_headers || '{}'), null, 2)}</pre>
+                    </details>
+                </div>\`
+            }).join('');
+        }
+
+        document.getElementById('dataForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            const body = Object.fromEntries(fd);
+            const tags = Array.from(document.querySelectorAll('input[name=\"tags\"]:checked')).map(cb => cb.value);
+            const payload = { 
+                ...body, 
+                slider_val: Number(body.slider_val),
+                tags, 
+                is_active: fd.get('is_active') === 'on' 
+            };
+
+            await fetch('/api/entries', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            e.target.reset();
+            if(e.target.querySelector('output')) e.target.querySelector('output').value = '50';
+            load();
+        });
+
+        load();
+    </script>
+</body></html>`;
+}
+
+function stringToArrayBuffer(str: string): Uint8Array<ArrayBuffer> {
+  const encoded = encoder.encode(str);
+  const buffer = new ArrayBuffer(encoded.byteLength);
+  const view = new Uint8Array(buffer);
+  view.set(encoded);
+  return view;
+}
+
+
+================================================================================
+FILE PATH: tsconfig.json
+================================================================================
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "moduleResolution": "bundler",
+    "types": ["@cloudflare/workers-types"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
+
+
+================================================================================
+FILE PATH: vite.config.ts
+================================================================================
+import { defineConfig } from 'vite';
+import { cloudflare } from '@cloudflare/vite-plugin';
+
+export default defineConfig({
+  plugins: [cloudflare()],
+  build: {
+    rollupOptions: {
+      input: 'src/index.ts',
+    },
+  },
+});
+
+
+================================================================================
+FILE PATH: wrangler.toml
+================================================================================
+name = "crud"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Enable static assets (This serves files from the /public folder)
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "my-crud-db"
+database_id = "5671ecfa-4064-4392-a1ac-030f1d0dfe83"
+
+================================================================================
+FILE PATH: yarn.lock
+================================================================================
 # THIS IS AN AUTOGENERATED FILE. DO NOT EDIT THIS FILE DIRECTLY.
 # yarn lockfile v1
 
@@ -1180,3 +1866,5 @@ zod@^3.25.76:
   version "3.25.76"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.76.tgz#26841c3f6fd22a6a2760e7ccb719179768471e34"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
+
+
