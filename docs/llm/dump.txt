@@ -192,6 +192,7 @@ echo "------------------------------------------------"
 FILE PATH: package.json
 ================================================================================
 {
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.21.0",
     "@cloudflare/workers-types": "^4.20260118.0",
